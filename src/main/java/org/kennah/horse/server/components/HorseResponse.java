@@ -1,4 +1,4 @@
-package org.kennah.horse;
+package org.kennah.horse.server.components;
 
 import java.util.List;
 import org.kennah.horse.server.model.Race;

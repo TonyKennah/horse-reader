@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import org.kennah.horse.server.components.GlobalProperties;
 import org.kennah.horse.server.model.Race;
 import org.kennah.horse.server.readers.FormReader;
 import org.kennah.horse.server.readers.HorseReader;
@@ -16,14 +18,14 @@ import org.kennah.horse.server.readers.RaceReader;
 import org.kennah.horse.utils.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DataReader {
 	
+	private GlobalProperties global;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final static String URI = "http://www.skysports.com";
-	private final static String PATH = "/racing/racecards/";
 	private Object lock = new Object();
 	private Map<String, List<Race>> allraces = new HashMap<>();
 	private Set<String> active = new HashSet<>();
@@ -31,6 +33,11 @@ public class DataReader {
 	public DataReader(){
 		logger.info("   "+DataReader.class.getSimpleName()+"::Constructor");
 	}
+	
+	@Autowired
+    public void setGlobal(GlobalProperties global) {
+        this.global = global;
+    }
 		
 	public List<Race> getTheRaces(String date, long id) throws IOException, InterruptedException, ExecutionException, ParseException {
 		
@@ -57,7 +64,7 @@ public class DataReader {
 			logger.info("   "+ DataReader.class.getSimpleName() + "::getTheRaces() reading races from file "+id+" "+date);
 			if(races.size()<1){
 				logger.info("   "+ DataReader.class.getSimpleName() + "::getTheRaces() No races GENERATING! "+id+" "+date);
-				races = new RaceReader(URI, PATH, date).get();
+				races = new RaceReader(global.getTargeturl(), global.getTargetpath(), date).get();
 				races.parallelStream()
 					.peek(race -> race.setHorses(new HorseReader(race.getUrl()).get()))
 					.flatMap(race -> race.getHorses().parallelStream())
