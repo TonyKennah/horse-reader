@@ -35,9 +35,9 @@ public class DataReader {
 	}
 	
 	@Autowired
-    public void setGlobal(GlobalProperties global) {
-        this.global = global;
-    }
+	public void setGlobal(GlobalProperties global) {
+		this.global = global;
+	}
 		
 	public List<Race> getTheRaces(String date, long id) throws IOException, InterruptedException, ExecutionException, ParseException {
 		

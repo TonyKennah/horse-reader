@@ -8,18 +8,21 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.kennah.horse.server.DataReader;
+import org.kennah.horse.utils.Face;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 @SpringBootApplication
 public class HorseApplication implements CommandLineRunner {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	public final static Logger logger = LoggerFactory.getLogger("HorseApplication");
 	@Autowired
 	private DataReader reader;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(HorseApplication.class, args);
+		logger.info("   "+ HorseApplication.class.getSimpleName() + "::main() \n" + Face.getFace());
+		logger.info("   "+ HorseApplication.class.getSimpleName() + "::main() - Setup Complete - Application Ready");
 	}
 
 	@Override

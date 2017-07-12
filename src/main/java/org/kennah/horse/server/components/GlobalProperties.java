@@ -7,20 +7,22 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties 
 public class GlobalProperties {
 
-    private String targeturl;
-    private String targetpath;
+	private String targeturl;
+	private String targetpath;
+
 	public String getTargeturl() {
 		return targeturl;
 	}
+
 	public void setTargeturl(String targeturl) {
 		this.targeturl = targeturl;
 	}
+	
 	public String getTargetpath() {
 		return targetpath;
 	}
+	
 	public void setTargetpath(String targetpath) {
 		this.targetpath = targetpath;
 	}
-    
-
 }

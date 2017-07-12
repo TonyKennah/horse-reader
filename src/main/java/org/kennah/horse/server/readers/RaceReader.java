@@ -58,7 +58,7 @@ public class RaceReader {
 					//System.out.println(r);
 					if(d.size()<2){
 						races.remove(URI + link.attr("href"));
-						break;
+						continue;
 					}
 					r.setDistance(d.get(d.size() - 2).trim());
 					r.setDistanceInYards(r.getDistance());
