@@ -35,7 +35,7 @@ public class HorseApplication implements CommandLineRunner {
 	@Override
 	public void run(String... arg0) throws Exception {
 		logger.info("   " + HorseApplication.class.getSimpleName() + "::run() CommandLineRunner");
-		logger.info("   " + HorseApplication.class.getSimpleName() + "::main() \n" + Utility.getFace(global.getFaceurl()));
+		logger.info("   " + HorseApplication.class.getSimpleName() + "::run() TK FACE:\n" + Utility.getFace(global.getFaceurl()));
 		LocalDate date = LocalDate.now().plusDays(0);
 		String textfirst = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		logger.info("   " + HorseApplication.class.getSimpleName() + "::run() -> getTheRaces(" + textfirst + ",TK)");
