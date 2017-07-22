@@ -5,9 +5,10 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body> 
-<center><h1 th:text="#{index.welcome}">Fellow Spring Framework Gurus!!!</h1>
+<center><h1 th:text="#{index.welcome}">Spring Framework</h1>
 <h3 th:text="${date}">Default Header</h3>
-<h5 th:text="${version}">Default Header</h5></center>
+<h3 th:text="'Username: ' + ${user}">Default Header</h3>
+<h5 th:text="'Version: ' + ${version}">Default Header</h5></center>
 	<span th:each="race : ${races}">
     	<h1><a href="/" th:href="${race.url}" target="_blank">
     	<p th:text="${race.time + ' ' + race.place}">Welcome</p></a></h1>
@@ -16,7 +17,15 @@
     		<p th:text="${horse.number + ' ' + horse.name}">Welcome</p></a></h3>
     			<table border="2">
     			<tr><td th:each="past: ${horse.past}"><a href="/" th:href="${past.url}" target="_blank">
-    					<span th:text="${past.date}">view</span></a>
+    					<span th:text="${past.date + ' '  
+    								+ past.weight + ' '
+    								+ past.course + ' '
+    								+ past.distance + ' '
+    								+ past.going + ' '
+    								+ past.position + ' ' 
+    								+ past.distBeaten + ' '
+    								+ past.winner + ' ' 
+    								}">view</span></a>
     				</td>
     			</tr>
     			</table>

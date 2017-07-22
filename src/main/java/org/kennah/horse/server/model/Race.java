@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class Race implements Serializable{
+public class Race implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String url;
 	private String place;
 	private String country;
 	private String time;
+	private String going;
 	private String distance;
 	private int distanceInYards;
 	private String detail;
@@ -39,6 +40,14 @@ public class Race implements Serializable{
 
 	public void setCountry(String country) {
 		this.country = country;
+	}
+
+	public String getGoing() {
+		return going;
+	}
+
+	public void setGoing(String going) {
+		this.going = going;
 	}
 
 	public String getTime() {
@@ -108,16 +117,32 @@ public class Race implements Serializable{
 		this.horses = horses;
 	}
 	
+	public static String transformGoing(String str){
+		if(str==null)
+			return "Gd";
+    	str = str.trim();
+        String rtnStr = "Gd";
+        if(str.contains("Good to Soft")) rtnStr = "Gd/Sft";
+        else if(str.contains("Soft to Heavy")) rtnStr = "Sft/Hvy";
+        else if(str.contains("Yeilding to Soft")) rtnStr = "Yld/Sft";
+        else if(str.contains("Good to Yeilding")) rtnStr = "Gd/Yld";
+        else if(str.contains("Yeilding to Soft")) rtnStr = "Yld/Sft";
+        else if(str.contains("Good to Firm")) rtnStr = "Gd/Fm";
+        else if(str.contains("Standard")) rtnStr = "std";
+        else if(str.contains("Soft")) rtnStr = "Sft";
+        else if(str.contains("Yeilding")) rtnStr = "Yld";
+        else if(str.contains("Heavy")) rtnStr = "Hvy";
+        else if(str.contains("Firm")) rtnStr = "Fm";
+        else if(str.contains("Good")) rtnStr = "Gd";
+        else if(str.contains("Fast")) rtnStr = "Fast";
+        else if(str.contains("Sloppy")) rtnStr = "Sloppy"; 
+        return rtnStr;
+    }
+
 	@Override
 	public String toString() {
-		return "\nRace [" + time + " " + place 
-				+ ", runners=" + runners 
-				+ ", distance=" + distance
-				+ ", distanceInYards=" + distanceInYards 
-				+ ", country=" + country  
-				+ ", detail="+ detail
-				+ ", url=" + url
-				+ ", HORSES " + horses
-				+ "]";
+		return "\nRace [" + time + " " + place + ", runners=" + runners + ", distance=" + distance + ", going=" + going
+				+ ", distanceInYards=" + distanceInYards + ", country=" + country + ", detail=" + detail + ", url="
+				+ url + ", HORSES " + horses + "]";
 	}
 }

@@ -3,7 +3,7 @@ package org.kennah.horse.server.model;
 import java.io.Serializable;
 import java.util.List;
 
-public class Horse implements Serializable{
+public class Horse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String name;
@@ -15,10 +15,11 @@ public class Horse implements Serializable{
 	private String lastRun;
 	private String form;
 	private String weight;
+	private String allowance;
 	private String jockey;
 	private String trainer;
 	private List<Past> past;
-	
+
 	public String getName() {
 		return name;
 	}
@@ -26,7 +27,7 @@ public class Horse implements Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getNumber() {
 		return number;
 	}
@@ -42,7 +43,7 @@ public class Horse implements Serializable{
 	public void setDraw(String draw) {
 		this.draw = draw;
 	}
-	
+
 	public String getSilks() {
 		return silks;
 	}
@@ -74,7 +75,7 @@ public class Horse implements Serializable{
 	public void setWeight(String weight) {
 		this.weight = weight;
 	}
-	
+
 	public String getProfile() {
 		return profile;
 	}
@@ -106,7 +107,7 @@ public class Horse implements Serializable{
 	public void setTrainer(String trainer) {
 		this.trainer = trainer;
 	}
-	
+
 	public List<Past> getPast() {
 		return past;
 	}
@@ -115,20 +116,18 @@ public class Horse implements Serializable{
 		this.past = past;
 	}
 
+	public String getAllowance() {
+		return allowance;
+	}
+
+	public void setAllowance(String allowance) {
+		this.allowance = allowance;
+	}
+
 	@Override
 	public String toString() {
-		return "\n      Horse "
-				+ "[name=" + name 
-				+ ", number=" + number 
-				+ ", draw=" + draw  
-				+ ", lastRun=" + lastRun
-				+ ", form=" + form 
-				+ ", weight=" + weight 
-				+ ", jockey=" + jockey 
-				+ ", trainer=" + trainer
-				+ ", silks=" + silks
-				+ ", profile=" + profile 
-				+ ", past=" + past
-				+ "]";
+		return "\n      Horse " + "[name=" + name + ", number=" + number + ", draw=" + draw + ", lastRun=" + lastRun
+				+ ", form=" + form + ", weight=" + weight + ", allowance=" + allowance + ", jockey=" + jockey
+				+ ", trainer=" + trainer + ", silks=" + silks + ", profile=" + profile + ", past=" + past + "]";
 	}
 }

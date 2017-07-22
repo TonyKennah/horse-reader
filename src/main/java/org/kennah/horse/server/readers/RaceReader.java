@@ -1,6 +1,8 @@
 package org.kennah.horse.server.readers;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,48 +17,55 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.kennah.horse.server.model.Race;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RaceReader {
-	
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private String TODAY;
 	private String PATH;
 	private String URI;
-	
-	public RaceReader(String uri, String path, String today){
+
+	/**
+	 * @param uri
+	 * @param path
+	 * @param today
+	 */
+	public RaceReader(String uri, String path, String today) {
 		this.TODAY = today;
 		this.PATH = path;
 		this.URI = uri;
 	}
-	
-	public List<Race> get(){
-		Document doc = null;
-		try {
-			doc = Jsoup.connect(URI + PATH + TODAY).get();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Map<String, String> places = this.getImagesViaJSoup(doc);
+
+	/**
+	 * @return
+	 */
+	public List<Race> get() {
+		Elements links = getRacesFromDate(TODAY);
+		links.addAll(getRacesFromDate(minusDay(TODAY)));
+		Map<String, String> goings = getRacesGoing(TODAY);
+		goings.putAll(getRacesGoing(minusDay(TODAY)));
+
 		Map<String, Race> races = new HashMap<>();
-		Elements links = doc.select("a[href]");
 		for (Element link : links) {
-			if (link.attr("href").contains(TODAY) && link.attr("href").contains("racecards")
-					&& !link.attr("href").endsWith(TODAY)) {
-				Race r = new Race();
-				if (link.text().matches("\\d\\d:\\d\\d")) {
-					r.setUrl(URI + link.attr("href"));
-					String message = capitalise(link.attr("href").split("/")[3]);
-					r.setPlace(Character.toUpperCase(message.charAt(0)) + message.substring(1));
-					r.setCountry(places.get(r.getPlace()));
-					r.setTime(link.text());
-					races.put(r.getUrl(), r);
-				} else if (races.containsKey(URI + link.attr("href"))) {
+			Race r = new Race();
+			if (link.text().matches("\\d\\d:\\d\\d") && !link.attr("href").trim().matches(".*?\\d{6}/$")) {
+				r.setUrl(URI + link.attr("href"));
+				String message = capitalise(link.attr("href").split("/")[3]);
+				r.setPlace(Character.toUpperCase(message.charAt(0)) + message.substring(1));
+				r.setGoing(goings.get(r.getPlace()));
+				r.setTime(link.text());
+				races.put(r.getUrl(), r);
+			} else {
+				String temp = URI + link.attr("href");
+				if (races.containsKey(temp)) {
 					r = races.get(URI + link.attr("href"));
 					r.setDetail(link.text());
-					List<String> d = Arrays.asList(link.text().substring(link.text().lastIndexOf("("), link.text().length()).split(","));
+					List<String> d = Arrays.asList(
+							link.text().substring(link.text().lastIndexOf("("), link.text().length()).split(","));
 					String runners = d.get(d.size() - 1).replace("(", "").replace(" runners)", "").trim();
-					//System.out.println(r);
-					if(d.size()<2){
+					if (d.size() < 2) {
 						races.remove(URI + link.attr("href"));
 						continue;
 					}
@@ -73,8 +82,73 @@ public class RaceReader {
 
 		return raceList.stream().sorted(sortByPlace.thenComparing(sortByTime)).collect(Collectors.toList());
 	}
-	
-	private String capitalise(String str){
+
+	/**
+	 * @param date
+	 * @return
+	 */
+	private String minusDay(String date) {
+		return LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy")).minusDays(1)
+				.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+	}
+
+	/**
+	 * @param day
+	 * @return
+	 */
+	public Elements getRacesFromDate(String day) {
+		Elements returnLinks = new Elements();
+		Document doc = null;
+		try {
+			doc = Jsoup.connect(URI + PATH + day).get();
+		} catch (IOException e) {
+			logger.error("   " + RaceReader.class.getSimpleName() + "::getRacesFromDate() Couldn't connect " + URI
+					+ PATH + day);
+		}
+		Elements links = doc.select("a[href]");
+		for (Element link : links) {
+			if (link.attr("href").contains(TODAY) && link.attr("href").contains("racecards")
+					&& !link.attr("href").endsWith(TODAY) && !link.text().matches("\\d\\d:\\d\\d.*?[A-Z].*?")) {
+				returnLinks.add(link);
+			}
+		}
+		return returnLinks;
+	}
+
+	/**
+	 * @param day
+	 * @return
+	 */
+	private Map<String, String> getRacesGoing(String day) {
+		Map<String, String> ret = new HashMap<>();
+		Document doc = null;
+		try {
+			doc = Jsoup.connect(URI + PATH + day).get();
+		} catch (IOException e) {
+			logger.error("   " + RaceReader.class.getSimpleName() + "::getRacesFromDate() Couldn't connect " + URI
+					+ PATH + day);
+		}
+		Elements e = doc.getElementsByClass("hdr-cpt");
+		for (Element ele : e) {
+			String place = ele.text();
+			String going = ele.parent().nextElementSibling().text().trim();
+			if (going.contains("("))
+				going = going.substring(0, going.lastIndexOf("(") - 1).trim();
+			if (going.equals("")) {
+				going = "Good";
+			} else {
+				going = going.replace("Going: ", "");
+			}
+			ret.put(place, going);
+		}
+		return ret;
+	}
+
+	/**
+	 * @param str
+	 * @return
+	 */
+	private String capitalise(String str) {
 		Pattern pattern = Pattern.compile("-\\w");
 		Matcher matcher = pattern.matcher(str);
 		StringBuffer result = new StringBuffer();
@@ -84,14 +158,4 @@ public class RaceReader {
 		matcher.appendTail(result);
 		return result.toString();
 	}
-
-	private Map<String, String> getImagesViaJSoup(Document doc) {
-		Map<String, String> flags = new HashMap<>();
-		Elements elements = doc.getElementsByTag("IMG");
-		for (Element s : elements)
-			if (s.attr("src").contains("flags"))
-				flags.put(s.parent().text(), s.attr("src").split("/")[5].replace(".png", "").replace("-", " "));
-		return flags;
-	}
-
 }
