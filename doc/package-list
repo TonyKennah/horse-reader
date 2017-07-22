@@ -1,0 +1,7 @@
+org.kennah.horse
+org.kennah.horse.server
+org.kennah.horse.server.model
+org.kennah.horse.server.odds
+org.kennah.horse.server.readers
+org.kennah.horse.utils
+src.shared.meetings
