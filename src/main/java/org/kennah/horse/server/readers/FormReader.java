@@ -61,7 +61,7 @@ public class FormReader implements Callable<List<Past>>, Supplier<List<Past>> {
 
 	/**
 	 * @param past
-	 * @param doc
+	 * @param doc .
 	 */
 	public void setAddedPast(List<Past> past, Document doc) {
 		Elements links = doc.select("a[href]");
